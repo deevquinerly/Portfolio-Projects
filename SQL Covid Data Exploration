@@ -1,0 +1,96 @@
+----Checking to make sure that our datasets are loaded and ready----
+Select *
+From `portfolio-project-366019.covid_deaths.covid_deaths`
+order by 1,2
+
+Select *
+From `covid_vaccinations.covid_vaccinations`
+order by 3,4
+
+----Select Data that we are going to be using----
+
+Select location, date, total_cases, new_cases, total_deaths, population
+From `portfolio-project-366019.covid_deaths.covid_deaths`
+order by 1,2
+
+----Looking at total cases vs total deaths in the United States----
+
+Select location, date, total_cases, total_deaths, (total_deaths/total_cases)*100 as DeathPercentage
+From `portfolio-project-366019.covid_deaths.covid_deaths`
+where location = 'United States'
+order by 1,2
+
+----Looking at the Percent of the Population Infected by Country----
+
+Select location, population, max(total_cases) as HighestInfectionCount, max((total_cases/population)*100) as PercentPopulationInfected
+From `portfolio-project-366019.covid_deaths.covid_deaths`
+order by 1,2
+
+
+----Looking at the Percent of the Population Infected by Country from Highest to Lowest Percentage----
+
+Select location, population, max(total_cases) as HighestInfectionCount, max((total_cases/population))*100 as PercentPopulationInfected
+From `portfolio-project-366019.covid_deaths.covid_deaths`
+Group by location, population 
+order by PercentPopulationInfected desc
+
+----Showing continents with highest death counts in descending order----
+
+Select continent, max(total_deaths) as TotalDeathCount
+From `covid_deaths.covid_deaths`
+Where continent is not null
+Group by continent
+order by TotalDeathCount desc
+
+----Showing countries with the highest total death count in descending order----
+
+Select location, max(total_deaths) as TotalDeathCount
+From `covid_deaths.covid_deaths`
+Where continent is not null
+Group by location
+order by TotalDeathCount desc
+
+
+----Global daily numbers of new cases, new deaths, and death percentage----
+
+Select date, sum(new_cases) as TotalCases, sum(new_deaths) as TotalDeaths, sum(new_deaths)/sum(new_cases)*100 as DeathPercentage
+From `portfolio-project-366019.covid_deaths.covid_deaths`
+Where continent is not null 
+Group by date
+order by 1,2
+
+----Joining our two tables (covid_deaths and covid_vaccinations)----
+
+Select * 
+From `covid_deaths.covid_deaths` dea
+Join `covid_vaccinations.covid_vaccinations` vac
+  On dea.location = vac.location 
+  and dea.date = vac.date
+
+----Looking at Daily New Vaccinations in the United States----
+
+Select dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations 
+From `covid_deaths.covid_deaths` dea
+Join `covid_vaccinations.covid_vaccinations` vac
+  On dea.location = vac.location 
+  and dea.date = vac.date
+  Where dea.continent is not null and new_vaccinations is not null and vac.location = "United States"
+  Order by 1,2
+
+  ----Looking at a Rolling Count of Daily Vaccinations in the United States using Partition By----
+
+Select dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations, sum(cast(vac.new_vaccinations as int)) Over (Partition by dea.location order by dea.location, dea.date) as RollingPeopleVaccinated
+From `covid_deaths.covid_deaths` dea
+Join `covid_vaccinations.covid_vaccinations` vac
+  On dea.location = vac.location 
+  and dea.date = vac.date
+  Where dea.continent is not null and vac.location = 'United States'
+  Order by 1,2
+
+----Looking at US death percentages over time----
+
+Select location, date, total_cases, total_deaths, (total_deaths/total_cases)*100 as DeathPercentage
+From `portfolio-project-366019.covid_deaths.covid_deaths`
+where location = 'United States'
+order by 1,2
+
