@@ -1,4 +1,4 @@
-----Checking to make sure that our datasets are loaded and ready----
+----Checking to make sure that datasets are loaded and ready----
 Select *
 From `portfolio-project-366019.covid_deaths.covid_deaths`
 order by 1,2
@@ -7,13 +7,7 @@ Select *
 From `covid_vaccinations.covid_vaccinations`
 order by 3,4
 
-----Select Data that we are going to be using----
-
-Select location, date, total_cases, new_cases, total_deaths, population
-From `portfolio-project-366019.covid_deaths.covid_deaths`
-order by 1,2
-
-----Looking at total cases vs total deaths in the United States----
+----Looking at total cases, total deaths, and calculating DeathPercentage in the United States----
 
 Select location, date, total_cases, total_deaths, (total_deaths/total_cases)*100 as DeathPercentage
 From `portfolio-project-366019.covid_deaths.covid_deaths`
