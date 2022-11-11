@@ -163,3 +163,24 @@ DROP COLUMN OwnerAddress, TaxDistrict, PropertyAddress
 
 ALTER TABLE [Nashville Housing]
 DROP COLUMN SaleDate
+
+-----------------------------------------------------------
+--Finding the average PropertyValue and SalePrice 
+
+Select  Distinct PropertySplitCity AS City, 
+Cast(AVG(TotalValue) AS INT) AS AverageTotalValue, 
+Cast(AVG(SalePrice) AS INT) AS AverageSalePrice, 
+AVG(Acreage) AS AverageAcreage
+From ['Nashville Housing Data for Data$']
+GROUP BY PropertySplitCity
+ORDER BY AverageTotalValue desc
+
+--Finding the Average Acreage, LandValue, and PropertyValue for Properties in each specified city
+
+SELECT DISTINCT PropertySplitCity AS City,
+AVG(Acreage) OVER (Partition By PropertySplitCity) AS AvgAcreage,
+AVG(LandValue) OVER (Partition By PropertySplitCity) AS AvgLandValue,
+AVG(TotalValue) OVER (Partition By PropertySplitCity) AS AvgPropertyValue
+FROM ['Nashville Housing Data for Data$']
+WHERE Acreage IS NOT NULL
+ORDER BY AvgAcreage DESC
